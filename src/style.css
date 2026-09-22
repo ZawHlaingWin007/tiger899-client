@@ -1,0 +1,319 @@
+@import "tailwindcss";
+
+:root {
+  --tiger-purple: #511799;
+  --tiger-purple-bright: #640ae0;
+  --tiger-surface: #16062b;
+  --tiger-surface-raised: #260a4a;
+  --tiger-text: #f8f5ff;
+  --tiger-muted: #d9c8f2;
+  --tiger-gradient: linear-gradient(135deg, #511799 0%, #640ae0 100%);
+}
+
+body {
+  color: var(--tiger-text) !important;
+  background:
+    radial-gradient(circle at 75% -10%, rgba(100, 10, 224, 0.34), transparent 36%),
+    linear-gradient(160deg, #16062b 0%, #260a4a 52%, #11031f 100%) !important;
+}
+
+/* Brand palette compatibility for the inherited app surfaces and controls. */
+[class*="bg-[#080E1E]"], [class*="bg-[#080e1e]"] { background-color: var(--tiger-surface) !important; }
+[class*="bg-[#172240]"], [class*="bg-[#374164]"], [class*="bg-[#2d3748]"], [class*="bg-[#0b1224]"] { background-color: var(--tiger-surface-raised) !important; }
+[class*="border-[#1986E1]"], [class*="border-[#1986e1]"], [class*="hover:border-[#1986E1]"] { border-color: var(--tiger-purple-bright) !important; }
+[class*="text-[#1986E1]"], [class*="text-[#1986e1]"] { color: #d8bbff !important; }
+[class*="bg-[#1986E1]"], [class*="bg-[#1986e1]"] { background: var(--tiger-gradient) !important; color: #fff !important; }
+[class*="ring-[#1986E1]"], [class*="ring-[#1986e1]"], [class*="focus:ring-[#1986E1]"] { --tw-ring-color: rgba(100, 10, 224, 0.62) !important; }
+[class*="focus:border-[#1986E1]"] { border-color: var(--tiger-purple-bright) !important; }
+
+/* Compact app buttons: small radius + smooth raised shadow */
+.btn-app {
+  border-radius: 6px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.14),
+    0 2px 3px rgba(0, 0, 0, 0.28);
+}
+.btn-app-blue {
+  background: var(--tiger-gradient);
+  color: #fff;
+}
+.btn-app-blue:hover {
+  background: linear-gradient(135deg, #640ae0 0%, #511799 100%);
+}
+.btn-app-green {
+  background: #22c55e;
+  color: #fff;
+}
+.btn-app-green:hover {
+  background: #16a34a;
+}
+.btn-app-dark {
+  background: var(--tiger-surface);
+  color: #fff;
+}
+.btn-app-navy {
+  background: var(--tiger-surface-raised);
+  color: #fff;
+}
+
+/* IXMM-style header / CTA pills, recolored to Tiger899 */
+.header-ixmm {
+  background: linear-gradient(182deg, #511799 0%, #11031f 100%);
+}
+.btn-ixmm-login {
+  border-radius: 999px;
+  color: #fff;
+  background:
+    linear-gradient(#2a0d4d, #16062b) padding-box,
+    linear-gradient(125deg, #ffe8d0, #a6761e 31.53%, #fff0d4 64.87%, #ffd382) border-box;
+  border: 2px solid transparent;
+  font-weight: 600;
+}
+.btn-ixmm-login:hover {
+  filter: brightness(1.08);
+}
+.btn-ixmm-register {
+  border-radius: 999px;
+  color: #1a1200;
+  background: radial-gradient(100% 100% at 50% 0, #ffc107 0, #bb8d00 44%, #ffc107 100%);
+  font-weight: 700;
+}
+.btn-ixmm-register:hover {
+  filter: brightness(1.06);
+}
+.btn-ixmm-ghost {
+  border-radius: 999px;
+  color: #fff;
+  background:
+    linear-gradient(#2a0d4d, #16062b) padding-box,
+    linear-gradient(125deg, #e8d4ff, #640ae0 31.53%, #f0e0ff 64.87%, #c9a6ff) border-box;
+  border: 2px solid transparent;
+  font-weight: 600;
+}
+
+/* Cursor pointer for all buttons and clickable elements */
+button,
+a[href],
+[role="button"],
+input[type="submit"],
+input[type="button"],
+input[type="reset"],
+select,
+label[for],
+.van-action-sheet__item,
+.van-dialog__confirm,
+.van-dialog__cancel,
+.van-button,
+.cursor-pointer {
+  cursor: pointer !important;
+}
+
+/* Myanmar (Burmese) font – better spacing and readability site-wide */
+[class*="Padauk"],
+[class*="Pyidaungsu"] {
+  font-family: "Padauk", "Pyidaungsu", sans-serif;
+  letter-spacing: 0.025em;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Global Van Pagination Styles */
+.pagination-container {
+  background: rgba(26, 35, 46, 0.8);
+  backdrop-filter: blur(8px);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: inline-block;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Van Pagination CSS Variables */
+.van-pagination {
+  --van-pagination-item-font-size: 15px;
+  
+  --van-pagination-item-width: 42px;
+  --van-pagination-item-height: 42px;
+  --van-pagination-item-margin: 0 8px;
+  --van-pagination-item-background-color: transparent;
+  --van-pagination-item-color: #ffffff;
+  --van-pagination-item-active-color: #ffffff;
+  --van-pagination-item-active-background-color: #640AE0;
+  --van-pagination-item-disabled-color: #9ca3af;
+  --van-pagination-item-disabled-background-color: transparent;
+}
+
+/* Pagination Items */
+.van-pagination__item {
+  border-radius: 12px !important;
+  font-weight: 600 !important;
+  font-family: "Pyidaungsu", "Padauk", sans-serif !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  background-color: transparent !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-width: 42px !important;
+  height: 42px !important;
+}
+
+/* Inactive page numbers */
+.van-pagination__item:not(.van-pagination__item--active):not(
+    .van-pagination__item--disabled
+  ) {
+  background-color: transparent !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+
+/* Hover state for inactive items */
+.van-pagination__item:hover:not(.van-pagination__item--disabled):not(
+    .van-pagination__item--active
+  ) {
+  background-color: rgba(9, 31, 48, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Active page number */
+.van-pagination__item--active {
+  background: var(--tiger-gradient) !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  box-shadow: 0 4px 12px rgba(25, 134, 225, 0.5),
+    0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+  transform: scale(1.05) !important;
+}
+
+/* Disabled state */
+.van-pagination__item--disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  pointer-events: none !important;
+}
+
+/* Prev/Next buttons */
+.van-pagination__prev,
+.van-pagination__next {
+  border: 1.5px solid rgba(255, 255, 255, 0.25) !important;
+  background-color: transparent !important;
+  border-radius: 12px !important;
+  color: #ffffff !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Prev/Next hover state */
+.van-pagination__prev:hover:not(.van-pagination__item--disabled),
+.van-pagination__next:hover:not(.van-pagination__item--disabled) {
+  background-color: rgba(9, 31, 48, 0.8) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-2px) !important;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Icon styling */
+.van-pagination .van-icon {
+  color: #ffffff !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+}
+
+/* Page number text styling */
+.van-pagination__item span {
+  font-weight: 600 !important;
+  font-family: "Pyidaungsu", "Padauk", sans-serif !important;
+  font-size: 15px !important;
+  letter-spacing: 0.3px !important;
+}
+
+/* Active page number text */
+.van-pagination__item--active span {
+  font-weight: 700 !important;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+}
+
+.van-pagination__items {
+  gap: 5px !important;
+}
+
+/* Ellipsis styling */
+.van-pagination__ellipsis {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-weight: 600 !important;
+}
+
+.van-hairline--surround:after {
+  border-width: 0px !important;
+}
+
+.van-popup {
+  overflow: visible !important;
+}
+
+/* Remove-from-favorites confirm dialog: full border radius + rectangular buttons */
+.unfavorite-confirm-dialog.van-dialog {
+  border-radius: 16px !important;
+  border-bottom-left-radius: 16px !important;
+  border-bottom-right-radius: 16px !important;
+  overflow: hidden;
+  --van-dialog-radius: 16px;
+}
+.unfavorite-confirm-dialog.van-dialog--round-button .van-dialog__footer {
+  padding: 16px 20px 20px;
+  background: #fff;
+  border-bottom-left-radius: 16px;
+  border-bottom-right-radius: 16px;
+  overflow: hidden;
+}
+.unfavorite-confirm-dialog.van-dialog--round-button .van-dialog__footer .van-action-bar {
+  gap: 12px;
+}
+.unfavorite-confirm-dialog.van-dialog--round-button .van-dialog__footer .van-action-bar-button {
+  border-radius: 10px !important;
+  height: 44px;
+  font-weight: 600;
+  font-size: 15px;
+}
+.unfavorite-confirm-dialog.van-dialog--round-button .van-dialog__footer .van-action-bar-button--first {
+  background: #f1f5f9 !important;
+  color: #475569 !important;
+}
+.unfavorite-confirm-dialog.van-dialog--round-button .van-dialog__footer .van-action-bar-button--last {
+  background: #dc2626 !important;
+  color: #fff !important;
+}
+
+/* Delete card confirm dialog: visible border + rounded corners */
+.delete-card-dialog.van-dialog {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 16px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  --van-dialog-radius: 16px;
+}
+.delete-card-dialog.van-dialog .van-dialog__header,
+.delete-card-dialog.van-dialog .van-dialog__content {
+  border-radius: 16px 16px 0 0;
+}
+.delete-card-dialog.van-dialog .van-dialog__footer {
+  border-radius: 0 0 16px 16px;
+}
+
+/* Dark modal (logout-dialog-dark): ensure title and description are visible on dark background */
+.logout-dialog-dark.van-dialog .van-dialog__header {
+  color: #f1f5f9 !important;
+}
+.logout-dialog-dark.van-dialog .van-dialog__message,
+.logout-dialog-dark.van-dialog .van-dialog__content,
+.logout-dialog-dark.van-dialog .van-dialog__message-text,
+.logout-dialog-dark.van-dialog .van-dialog__message *,
+.logout-dialog-dark.van-dialog .van-dialog__content * {
+  color: #e2e8f0 !important;
+}

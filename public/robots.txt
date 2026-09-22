@@ -1,0 +1,9 @@
+# Tiger899 - Myanmar Slot Games (multi-domain)
+# Domains listed in src/config/domain.js KNOWN_DOMAINS
+# Only standard directives (User-agent, Allow, Disallow, Sitemap). Do not add Content-Signal or other non-standard lines.
+User-agent: *
+Allow: /
+
+Sitemap: https://tiger899.com/sitemap.xml
+Sitemap: https://tiger899.net/sitemap.xml
+Sitemap: https://tiger899.vip/sitemap.xml
