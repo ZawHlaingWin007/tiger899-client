@@ -153,7 +153,7 @@ const handleAndroidDownload = () => confirmAndInstall("android");
         <!-- Hero image: smaller on mobile, full width in column -->
         <div class="flex justify-center items-end order-2 md:order-1 shrink-0">
           <img
-            src="@/assets/mock-download.png"
+            src="@/assets/mock-download2.png"
             :alt="t('Tiger899 Download', 'Tiger899 ဒေါင်းလုဒ်', 'Tiger899 下载', 'Tiger899 ดาวน์โหลด')"
             class="w-full max-w-[200px] sm:max-w-[280px] md:max-w-[320px] lg:max-w-[420px] drop-shadow-2xl object-contain"
           />
