@@ -37,7 +37,7 @@ window.axios = axios;
 axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 // axios.defaults.baseURL = 'http://localhost:8000/api/';
 // axios.defaults.baseURL = 'http://tiger899-api.test/api/';
-axios.defaults.baseURL = 'https://api.tiger899.com/api/';
+axios.defaults.baseURL = 'https://api.tiger899.club/api/';
 // 
 const authToken = localStorage.getItem('token');
 if (authToken) {
