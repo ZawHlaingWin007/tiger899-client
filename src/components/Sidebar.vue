@@ -212,12 +212,12 @@ const socialMenuItems = [
   {
     name: "TELEGRAM",
     icon: "telegram",
-    href: "https://t.me/Eazywin8",
+    href: "https://t.me/Tiger899_supportbot",
   },
   {
     name: "VIBER",
     icon: "viber",
-    href: "https://viber.me/959663263464",
+    href: "https://msng.link/o?959764319867=vi",
   },
 ];
 

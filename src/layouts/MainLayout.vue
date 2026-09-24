@@ -96,7 +96,7 @@ const {
 const MOCK_WELCOME_IMAGES = [
   {
     title: "Welcome",
-    imageUrl: "/cards/welcome1.png",
+    imageUrl: "/cards/webp/welcome1.webp",
   },
 ];
 

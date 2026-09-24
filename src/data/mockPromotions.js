@@ -1,8 +1,8 @@
-import promo1 from "../assets/promo1.png";
-import promo2 from "../assets/promo2.png";
-import promo3 from "../assets/promo3.png";
-import promo4 from "../assets/promo4.png";
-import promo5 from "../assets/promo5.png";
+import promo1 from "../assets/webp/promo1.webp";
+import promo2 from "../assets/webp/promo2.webp";
+import promo3 from "../assets/webp/promo3.webp";
+import promo4 from "../assets/webp/promo4.webp";
+import promo5 from "../assets/webp/promo5.webp";
 
 export const MOCK_CATEGORIES = [
   { id: "welcome", name: "Welcome" },

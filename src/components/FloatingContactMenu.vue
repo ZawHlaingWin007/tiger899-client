@@ -14,7 +14,7 @@ const links = [
   {
     label: "Telegram",
     icon: "telegram",
-    href: "https://t.me/Eazywin8",
+    href: "https://t.me/Tiger899_supportbot",
   },
   {
     label: "Facebook",
@@ -24,7 +24,7 @@ const links = [
   {
     label: "Viber",
     icon: "viber",
-    href: "https://viber.me/959663263464",
+    href: "https://msng.link/o?959764319867=vi",
   },
 ];
 
