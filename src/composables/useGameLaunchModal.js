@@ -160,13 +160,18 @@ export function useGameLaunchModal(options = {}) {
     }
   };
 
-  const handleGameClick = (game) => {
-    selectedGameForModal.value = game;
-    if (isMobile.value) {
-      showGameActionSheet.value = true;
-    } else {
-      showGameModal.value = true;
+  const launchGamePlay = async (game) => {
+    if (!game) return;
+    const original = game.originalGame || game;
+    if (beforePlay) {
+      const handled = await Promise.resolve(beforePlay(original));
+      if (handled) return;
     }
+    gameInit(original);
+  };
+
+  const handleGameClick = (game) => {
+    launchGamePlay(game);
   };
 
   const closeGameModal = () => {
@@ -177,16 +182,7 @@ export function useGameLaunchModal(options = {}) {
 
   const onPlayFromGameModal = async () => {
     const game = selectedGameForModal.value;
-    if (!game) return;
-    const original = game.originalGame || game;
-    if (beforePlay) {
-      const handled = await Promise.resolve(beforePlay(original));
-      if (handled) {
-        closeGameModal();
-        return;
-      }
-    }
-    gameInit(original);
+    await launchGamePlay(game);
     closeGameModal();
   };
 

@@ -112,6 +112,41 @@ const providers = [
   // },
 ];
 
+/** Map tab label → API `provider` param (games list / launch). */
+const QUERY_TO_API_PROVIDER = {
+  "PRAGMATIC PLAY": "Pragmatic",
+  "PG POCKET GAMES SOFT": "PGSoft",
+  JILI: "Jili",
+  "SPADE GAMING": "Spade",
+  "JDB JUST DO THE BEST": "JDB",
+  "LIVE22 METAVERSE": "Live22",
+  "CQ9 GAMING": "CQ9",
+  Rich88: "Rich88",
+  "R88 RICH88": "Rich88",
+  R88: "Rich88",
+  Joker: "JOKER",
+  EVOLUTION: "Evolution",
+  NETENT: "NetEnt",
+};
+
+const apiProviderNameForTab = (provider) =>
+  QUERY_TO_API_PROVIDER[provider.name] || provider.name;
+
+/** Resolve `?provider=` query to a slider tab (exact match only — avoids Rich ⊂ Rich88). */
+const findProviderByQuery = (queryProvider) => {
+  if (!queryProvider) return null;
+  const q = String(queryProvider).toLowerCase();
+
+  const byTabName = providers.find((p) => p.name.toLowerCase() === q);
+  if (byTabName) return byTabName;
+
+  return (
+    providers.find(
+      (p) => apiProviderNameForTab(p).toLowerCase() === q,
+    ) ?? null
+  );
+};
+
 const providerScrollRef = ref(null);
 const selectedProvider = ref(null);
 const isLoading = ref(false);
@@ -198,24 +233,7 @@ const filteredGames = computed(() => {
   if (selectedProvider.value) {
     const provider = providers.find((p) => p.id === selectedProvider.value);
     if (provider) {
-      // Map provider names to match API provider names
-      const providerMap = {
-        "PRAGMATIC PLAY": "Pragmatic",
-        "PG POCKET GAMES SOFT": "PGSoft",
-        JILI: "Jili",
-        "SPADE GAMING": "Spade",
-        "JDB JUST DO THE BEST": "JDB",
-        "LIVE22 METAVERSE": "Live22",
-        "CQ9 GAMING": "CQ9",
-        Rich88: "Rich88",
-        "R88 RICH88": "Rich88",
-        R88: "Rich88",
-        Joker: "JOKER",
-        EVOLUTION: "Evolution",
-        NETENT: "NetEnt",
-      };
-
-      const apiProviderName = providerMap[provider.name] || provider.name;
+      const apiProviderName = apiProviderNameForTab(provider);
       filtered = filtered.filter(
         (game) =>
           game.provider?.toLowerCase() === apiProviderName.toLowerCase()
@@ -285,23 +303,7 @@ const selectProvider = (providerId) => {
   if (selectedProvider.value) {
     const provider = providers.find((p) => p.id === providerId);
     if (provider) {
-      // Map provider to API provider name
-      const providerMap = {
-        "PRAGMATIC PLAY": "Pragmatic",
-        "PG POCKET GAMES SOFT": "PGSoft",
-        JILI: "Jili",
-        "SPADE GAMING": "Spade",
-        "JDB JUST DO THE BEST": "JDB",
-        "LIVE22 METAVERSE": "Live22",
-        "CQ9 GAMING": "CQ9",
-        Rich88: "Rich88",
-        "R88 RICH88": "Rich88",
-        R88: "Rich88",
-        Joker: "JOKER",
-        EVOLUTION: "Evolution",
-        NETENT: "NetEnt",
-      };
-      const apiProviderName = providerMap[provider.name] || provider.name;
+      const apiProviderName = apiProviderNameForTab(provider);
       router.push({ query: { provider: apiProviderName } });
     }
   } else {
@@ -413,15 +415,9 @@ watch(
   () => route.query.provider,
   (newProvider) => {
     if (newProvider) {
-      // Update selected provider based on URL query
-      const provider = providers.find(
-        (p) =>
-          p.name.toLowerCase().includes(newProvider.toLowerCase()) ||
-          newProvider.toLowerCase().includes(p.name.toLowerCase().split(" ")[0])
-      );
+      const provider = findProviderByQuery(newProvider);
       if (provider) {
         selectedProvider.value = provider.id;
-        // After setting, auto-scroll so the active provider button is visible
         nextTick(() => {
           const container = providerScrollRef.value;
           if (!container) return;
@@ -438,6 +434,8 @@ watch(
           });
         });
       }
+    } else {
+      selectedProvider.value = null;
     }
     fetchSlotGames();
   },
