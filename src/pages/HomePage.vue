@@ -281,6 +281,9 @@ const imageLinkGenerate = (gameId, type) => {
   if (type === "Jili") {
     return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/jili/${gameId}.webp`;
   }
+  if (type === "Rich88") {
+    return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/rich88/${gameId}.webp`;
+  }
   if (type === "Live22") {
     return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/live22/${gameId}.webp`;
   }
@@ -1247,6 +1250,7 @@ const allProviders = [
   { id: 14, name: "Playstar", logo: "https://storage.googleapis.com/spacetech2/yu95/PS-WHITE.png" },
   { id: 15, name: "Rich", logo: "https://storage.googleapis.com/spacetech2/yu95/rich-white.png" },
   { id: 16, name: "CQ9", logo: "https://images.484930494.com//TCG_PROD_IMAGES/RNG_LIST_VENDOR/CQ9-WHITE.png" },
+  { id: 17, name: "Rich88", logo: "/assets/rich88-logo.png" },
 ];
 const nextCard = () => navigateSwiper(cardSwiperRef, "next");
 const prevCard = () => navigateSwiper(cardSwiperRef, "prev");
@@ -1524,7 +1528,10 @@ const handleFishingSectionClick = () => {
           <img
             :src="provider.logo"
             :alt="provider.name"
-            class="w-[65px] h-[35px] md:w-[72px] md:h-[36px] object-contain"
+            :class="[
+              'w-[65px] h-[35px] md:w-[72px] md:h-[36px] object-contain',
+              provider.name === 'Rich88' ? 'grayscale contrast-200' : '',
+            ]"
           />
         </div>
       </div>

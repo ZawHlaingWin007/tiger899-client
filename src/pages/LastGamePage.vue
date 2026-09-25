@@ -28,6 +28,8 @@ function imageLinkGenerate(gameId, provider) {
   const type = provider || "";
   if (type === "Jili")
     return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/jili/${gameId}.webp`;
+  if (type === "Rich88")
+    return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/rich88/${gameId}.webp`;
   if (type === "Live22")
     return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/live22/${gameId}.webp`;
   if (type === "Spade")

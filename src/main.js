@@ -7,6 +7,7 @@ import store from './store'
 import { Locale } from 'vant'
 import enUS from 'vant/es/locale/lang/en-US'
 import 'vant/lib/index.css'
+import { ensureDeviceUuid } from './composables/useQuickLogin.js'
 
 import {
   Empty,
@@ -43,6 +44,8 @@ const authToken = localStorage.getItem('token');
 if (authToken) {
   axios.defaults.headers.common['Authorization'] = `Bearer ${authToken}`;
 }
+
+ensureDeviceUuid();
 
 import { formatAmount } from "./composables/useFormatAmount.js";
 import { updateSeoBaseUrl } from "./utils/seoBaseUrl.js";

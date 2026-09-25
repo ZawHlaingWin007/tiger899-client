@@ -15,6 +15,7 @@ const PROVIDER_LABELS = {
   JDB: "JDB",
   Live22: "L22",
   CQ9: "CQ9",
+  Rich88: "R88",
   R88: "R88",
   Evolution: "Evolution",
   NetEnt: "NetEnt",

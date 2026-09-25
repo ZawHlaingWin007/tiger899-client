@@ -48,6 +48,13 @@ body {
 .btn-app-green:hover {
   background: #16a34a;
 }
+.btn-app-gold {
+  color: #1a1200;
+  background: radial-gradient(100% 100% at 50% 0, #ffc107 0, #bb8d00 44%, #ffc107 100%);
+}
+.btn-app-gold:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
 .btn-app-dark {
   background: var(--tiger-surface);
   color: #fff;
@@ -81,6 +88,19 @@ body {
 }
 .btn-ixmm-register:hover {
   filter: brightness(1.06);
+}
+.btn-ixmm-quick-login {
+  border-radius: 999px;
+  color: #1a1200;
+  background: radial-gradient(100% 100% at 50% 0, #ffc107 0, #bb8d00 44%, #ffc107 100%);
+  font-weight: 700;
+}
+.btn-ixmm-quick-login:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+.btn-ixmm-quick-login:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 .btn-ixmm-ghost {
   border-radius: 999px;

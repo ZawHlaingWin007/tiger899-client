@@ -5,6 +5,7 @@ import { useRouter } from "vue-router";
 import axios from "axios";
 import { showSuccessToast, showLoadingToast, closeToast } from "vant";
 import { useTranslation } from "../composables/useTranslation";
+import { useQuickLogin } from "../composables/useQuickLogin";
 
 const props = defineProps({
   isOpen: {
@@ -18,6 +19,7 @@ const emit = defineEmits(["close", "openRegister"]);
 const store = useStore();
 const { t } = useTranslation();
 const router = useRouter();
+const { isQuickLogin, quickLogin } = useQuickLogin();
 
 const phone = ref("");
 const password = ref("");
@@ -60,6 +62,10 @@ const handleClose = () => {
 
 const handleOpenRegister = () => {
   emit("openRegister");
+};
+
+const handleQuickLogin = () => {
+  quickLogin({ onSuccess: handleClose });
 };
 
 const handleLogin = async () => {
@@ -266,22 +272,54 @@ watch(
           <small v-if="errors.password" class="text-red-400 text-xs mt-1 block font-['Pyidaungsu','Padauk',sans-serif]">{{ typeof errors.password === 'string' ? errors.password : errors.password?.[0] }}</small>
         </div>
 
-        <!-- Login Button -->
-        <button
-          type="button"
-          @click="handleLogin"
-          :disabled="isSignin"
-          class="btn-app btn-app-blue w-full mt-1 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm font-['Pyidaungsu','Padauk',sans-serif] flex items-center justify-center gap-2"
-        >
-          <template v-if="!isSignin">{{ t("Login", "အကောင့်ဝင်ရန်", "登录", "เข้าสู่ระบบ") }}</template>
-          <template v-else>
-            <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        <div class="flex gap-2 mt-1">
+          <button
+            type="button"
+            @click="handleLogin"
+            :disabled="isSignin || isQuickLogin"
+            class="btn-app btn-app-blue flex-1 py-2.5 disabled:opacity-50 disabled:cursor-not-allowed font-semibold text-sm font-['Pyidaungsu','Padauk',sans-serif] flex items-center justify-center gap-2"
+          >
+            <template v-if="!isSignin">{{ t("Login", "အကောင့်ဝင်ရန်", "登录", "เข้าสู่ระบบ") }}</template>
+            <template v-else>
+              <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ t("Logging in...", "ဝင်နေသည်...", "登录中...", "กำลังเข้าสู่ระบบ...") }}
+            </template>
+          </button>
+          <button
+            type="button"
+            class="btn-app btn-app-gold shrink-0 w-12 py-2.5 flex items-center justify-center disabled:opacity-50"
+            :aria-label="t('Quick Login', 'အမြန်ဝင်မည်', '快速登录', 'เข้าสู่ระบบด่วน')"
+            :title="t('Quick Login', 'အမြန်ဝင်မည်', '快速登录', 'เข้าสู่ระบบด่วน')"
+            :disabled="isSignin || isQuickLogin"
+            @click="handleQuickLogin"
+          >
+            <svg
+              v-if="!isQuickLogin"
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+              aria-hidden="true"
+            >
+              <path d="M11 21h-1l1-7H7.5c-.58 0-.57-.32-.38-.66l.07-.12L13 3h1l-1 7h3.5c.49 0 .56.33.47.51l-.07.15L11 21z" />
             </svg>
-            {{ t("Logging in...", "ဝင်နေသည်...", "登录中...", "กำลังเข้าสู่ระบบ...") }}
-          </template>
-        </button>
+            <svg
+              v-else
+              class="animate-spin h-5 w-5 text-white"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+            </svg>
+          </button>
+        </div>
 
         <!-- Viber Contact Link -->
         <!-- <div v-if="contactInfo" class="flex justify-center mt-4">

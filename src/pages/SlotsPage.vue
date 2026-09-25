@@ -100,6 +100,11 @@ const providers = [
     name: "BNG",
     logo: "https://storage.googleapis.com/spacetech2/yu95/BNG-WHITE.png",
   },
+  {
+    id: 17,
+    name: "Rich88",
+    logo: "/assets/rich88-logo.png",
+  },
   // {
   //   id: 17,
   //   name: "Joker",
@@ -126,6 +131,8 @@ const activeShuffleIcon = ref(null);
 const imageLinkGenerate = (gameId, type) => {
   if (type === 'Jili') {
     return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/jili/${gameId}.webp`;
+  } if (type === 'Rich88') {
+    return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/rich88/${gameId}.webp`;
   } if (type === 'Live22') {
     return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/live22/${gameId}.webp`;
   } if (type === 'Spade') {
@@ -200,7 +207,9 @@ const filteredGames = computed(() => {
         "JDB JUST DO THE BEST": "JDB",
         "LIVE22 METAVERSE": "Live22",
         "CQ9 GAMING": "CQ9",
-        "R88 RICH88": "R88",
+        Rich88: "Rich88",
+        "R88 RICH88": "Rich88",
+        R88: "Rich88",
         Joker: "JOKER",
         EVOLUTION: "Evolution",
         NETENT: "NetEnt",
@@ -285,7 +294,9 @@ const selectProvider = (providerId) => {
         "JDB JUST DO THE BEST": "JDB",
         "LIVE22 METAVERSE": "Live22",
         "CQ9 GAMING": "CQ9",
-        "R88 RICH88": "R88",
+        Rich88: "Rich88",
+        "R88 RICH88": "Rich88",
+        R88: "Rich88",
         Joker: "JOKER",
         EVOLUTION: "Evolution",
         NETENT: "NetEnt",
@@ -558,6 +569,7 @@ const scrollProviders = (direction) => {
               :class="[
                 'md:w-[100px] w-[70px] h-full object-contain',
                 provider.name === 'Joker' ? 'grayscale brightness-200' : '',
+                provider.name === 'Rich88' ? 'grayscale contrast-200' : '',
               ]"
             />
           </div>

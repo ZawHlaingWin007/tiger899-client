@@ -82,6 +82,8 @@ const displayedGamesCount = ref(gamesPerPage.value); // How many games are curre
 const imageLinkGenerate = (gameId, type) => {
   if (type === 'Jili') {
         return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/jili/${gameId}.webp`;
+    } if (type === 'Rich88') {
+        return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/rich88/${gameId}.webp`;
     } if (type === 'Live22') {
         return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/live22/${gameId}.webp`;
     } if (type === 'Spade') {
@@ -153,7 +155,9 @@ const filteredGames = computed(() => {
         "JDB JUST DO THE BEST": "JDB",
         "LIVE22 METAVERSE": "Live22",
         "CQ9 GAMING": "CQ9",
-        "R88 RICH88": "R88",
+        Rich88: "Rich88",
+        "R88 RICH88": "Rich88",
+        R88: "Rich88",
         EVOLUTION: "Evolution",
         NETENT: "NetEnt",
       };
@@ -363,7 +367,9 @@ const selectProvider = (providerId) => {
         "JDB JUST DO THE BEST": "JDB",
         "LIVE22 METAVERSE": "Live22",
         "CQ9 GAMING": "CQ9",
-        "R88 RICH88": "R88",
+        Rich88: "Rich88",
+        "R88 RICH88": "Rich88",
+        R88: "Rich88",
         EVOLUTION: "Evolution",
         NETENT: "NetEnt",
       };
