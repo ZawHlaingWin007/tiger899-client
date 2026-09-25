@@ -24,11 +24,11 @@ const providers = [
     name: "Pragmatic",
     logo: "https://images.484930494.com//TCG_PROD_IMAGES/RNG_LIST_VENDOR/PP-WHITE.png",
   },
-  {
-    id: 2,
-    name: "PGSoft",
-    logo: "https://images.484930494.com//TCG_PROD_IMAGES/RNG_LIST_VENDOR/PG-WHITE.png",
-  },
+  // {
+  //   id: 2,
+  //   name: "PGSoft",
+  //   logo: "https://images.484930494.com//TCG_PROD_IMAGES/RNG_LIST_VENDOR/PG-WHITE.png",
+  // },
 
   {
     id: 3,
