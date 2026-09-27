@@ -102,6 +102,15 @@ body {
   opacity: 0.6;
   cursor: not-allowed;
 }
+@media (max-width: 767px) {
+  button.btn-ixmm-quick-login,
+  button.btn-ixmm-login,
+  button.btn-ixmm-register {
+    font-size: 12px;
+    line-height: 1.35;
+    white-space: nowrap;
+  }
+}
 .btn-ixmm-ghost {
   border-radius: 999px;
   color: #fff;

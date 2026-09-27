@@ -207,7 +207,7 @@ const socialMenuItems = [
   {
     name: "facebook",
     icon: "facebook",
-    href: "https://www.facebook.com/profile.php?id=61593202325346",
+    href: "https://www.facebook.com/share/1Gjd9xnBye/",
   },
   {
     name: "TELEGRAM",

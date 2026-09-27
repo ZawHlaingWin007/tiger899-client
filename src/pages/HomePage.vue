@@ -1314,17 +1314,17 @@ const handleFishingSectionClick = () => {
         <template v-if="isLoggedIn">
           <button
             type="button"
-            class="btn-ixmm-login px-6 py-2 text-sm font-['Pyidaungsu','Padauk',sans-serif]"
-            @click="openWithdrawModal"
-          >
-            {{ t("Withdraw", "ငွေထုတ်", "提款", "ถอนเงิน") }}
-          </button>
-          <button
-            type="button"
             class="btn-ixmm-register px-6 py-2 text-sm font-['Pyidaungsu','Padauk',sans-serif]"
             @click="openDepositModal"
           >
             {{ t("Deposit", "ငွေသွင်း", "存款", "ฝากเงิน") }}
+          </button>
+          <button
+            type="button"
+            class="btn-ixmm-login px-6 py-2 text-sm font-['Pyidaungsu','Padauk',sans-serif]"
+            @click="openWithdrawModal"
+          >
+            {{ t("Withdraw", "ငွေထုတ်", "提款", "ถอนเงิน") }}
           </button>
         </template>
         <template v-else>
