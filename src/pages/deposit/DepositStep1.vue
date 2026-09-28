@@ -120,10 +120,11 @@ const isUSDTSelected = computed(() => {
   return String(name).toLowerCase().includes("usdt");
 });
 
-// Select deposit method
+// Select deposit method. A method with exactly one account is selected for the user.
 const selectDepositMethod = (method) => {
   selectedDepositMethod.value = method.id;
-  selectedAccount.value = null;
+  const accounts = Array.isArray(method.accounts) ? method.accounts : [];
+  selectedAccount.value = accounts.length === 1 ? accounts[0] : null;
   errors.value.method = null;
   errors.value.account = null;
 };
@@ -134,10 +135,14 @@ const selectAccount = (account) => {
   errors.value.account = null;
 };
 
-// Whether selected method has accounts (so we require account selection)
-const selectedMethodHasAccounts = computed(() => {
-  const list = selectedDepositMethodDetails.value?.accounts;
-  return Array.isArray(list) && list.length > 0;
+// Next is allowed only when the chosen account belongs to the current method.
+// A method with no accounts, or a leftover account from the previous method, stays blocked.
+const hasValidSelectedAccount = computed(() => {
+  const accounts = selectedDepositMethodDetails.value?.accounts;
+  if (!Array.isArray(accounts) || accounts.length === 0 || !selectedAccount.value) {
+    return false;
+  }
+  return accounts.some((account) => account.id === selectedAccount.value.id);
 });
 
 /** When payment type has no min/max set (null or <= 0), use these defaults (aligned with API). */
@@ -260,7 +265,7 @@ const validateForm = () => {
     isValid = false;
   }
 
-  if (selectedMethodHasAccounts.value && !selectedAccount.value) {
+  if (!hasValidSelectedAccount.value) {
     errors.value.account = t(
       "Please select an account",
       "အကောင့် ရွေးချယ်ပေးပါ",
@@ -1056,12 +1061,12 @@ const goBack = () => {
           @click="handleNext"
           :disabled="isLoading ||
             !selectedDepositMethod ||
-            (selectedMethodHasAccounts && !selectedAccount) ||
+            !hasValidSelectedAccount ||
             !depositAmountInRange
             "
           class="w-full bg-gray-400 text-white py-3 sm:py-4 rounded-lg sm:rounded-xl font-semibold text-base sm:text-lg transition-all font-['Pyidaungsu','Padauk',sans-serif] disabled:opacity-50 touch-manipulation"
           :class="selectedDepositMethod &&
-              (!selectedMethodHasAccounts || selectedAccount) &&
+              hasValidSelectedAccount &&
               depositAmountInRange &&
               !isLoading
               ? 'bg-red-600 hover:bg-red-700 active:scale-[0.98]'

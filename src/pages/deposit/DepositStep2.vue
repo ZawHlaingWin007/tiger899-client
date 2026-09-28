@@ -66,6 +66,8 @@ const accountInfo = ref({
 
 // Form state
 const transactionNumber = ref("");
+const transactionImage = ref([]);
+const MAX_TRANSACTION_IMAGE_BYTES = 5 * 1024 * 1024;
 const isConfirm = ref(false);
 const errors = ref({});
 const apiErrorMessage = ref("");
@@ -331,16 +333,63 @@ const startInitialCountdown = () => {
   }, 1000);
 };
 
-// Validate form
+const hasValidTransactionNumber = computed(() =>
+  /^\d{6}$/.test(String(transactionNumber.value || "").trim()),
+);
+
+const hasTransactionImage = computed(() => !!transactionImage.value?.[0]?.file);
+
+const proofRequiredMessage = () =>
+  t(
+    "Please enter the last 6 digits of the transaction number or upload a transaction image.",
+    "လုပ်ငန်းစဉ်နံပါတ် နောက်ဆုံး 6 လုံး ထည့်ပါ သို့မဟုတ် ငွေလွှဲဓာတ်ပုံ တင်ပါ။",
+    "请输入交易号后6位，或上传交易截图。",
+    "กรุณากรอกเลขท้าย 6 หลักของหมายเลขธุรกรรม หรืออัปโหลดรูปธุรกรรม",
+  );
+
+function onTransactionImageOversize() {
+  errors.value = {
+    ...errors.value,
+    transactionImage: t(
+      "Image must be 5MB or smaller.",
+      "ဓာတ်ပုံအရွယ်အစားသည် 5MB ထက် မကြီးရပါ။",
+      "图片不能超过 5MB。",
+      "รูปภาพต้องมีขนาดไม่เกิน 5MB",
+    ),
+  };
+}
+
+function onBeforeReadTransactionImage(file) {
+  const target = Array.isArray(file) ? file[0] : file;
+  const type = String(target?.type || "");
+  if (!type.startsWith("image/")) {
+    errors.value = {
+      ...errors.value,
+      transactionImage: t(
+        "Please upload an image file.",
+        "ဓာတ်ပုံဖိုင်ကို တင်ပေးပါ။",
+        "请上传图片文件。",
+        "กรุณาอัปโหลดไฟล์รูปภาพ",
+      ),
+    };
+    return false;
+  }
+  const nextErrors = { ...errors.value };
+  delete nextErrors.transactionImage;
+  delete nextErrors.proof;
+  errors.value = nextErrors;
+  return true;
+}
+
+// Validate form. A valid 6-digit ID or a transaction image is enough.
 const validateForm = () => {
   errors.value = {};
   let isValid = true;
+  const raw = String(transactionNumber.value || "").trim();
+  const numberIsValid = /^\d{6}$/.test(raw);
+  const numberIsPartial = raw.length > 0 && !numberIsValid;
 
-  if (
-    !transactionNumber.value ||
-    transactionNumber.value.length !== 6 ||
-    !/^\d{6}$/.test(transactionNumber.value)
-  ) {
+  if (numberIsPartial) {
     errors.value.transactionNumber = t(
       "Please enter last 6 digits of transaction number",
       "လုပ်ငန်းစဉ်နံပါတ်၏နောက်ဆုံး 6 လုံးကိုထည့်ပါ",
@@ -350,16 +399,25 @@ const validateForm = () => {
     isValid = false;
   }
 
+  if (!numberIsValid && !hasTransactionImage.value) {
+    if (!numberIsPartial) {
+      errors.value.proof = proofRequiredMessage();
+    }
+    isValid = false;
+  }
+
   return isValid;
 };
 
 // Submit deposit and return response (with id for polling)
 const submitDeposit = async (payload) => {
-  const res = await axios.post("/user/deposits", payload, {
-    headers: {
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    },
-  });
+  const headers = {
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  };
+  if (typeof FormData !== "undefined" && payload instanceof FormData) {
+    headers["Content-Type"] = "multipart/form-data";
+  }
+  const res = await axios.post("/user/deposits", payload, { headers });
   return res.data;
 };
 
@@ -521,18 +579,28 @@ const handleSubmit = async () => {
 
   isConfirm.value = true;
 
-  // Match Postman store withdraw/deposit: account_number, account_name, amount, remark, type
+  // Match Postman store withdraw/deposit: account_number, account_name, amount, remark, type.
+  // Remark and transaction image are optional individually; at least one is required.
   const acc = depositData.value.selectedAccount;
-  const depositPayload = {
-    payment_type_id: depositData.value.depositMethod,
-    account_id: acc?.id ?? null,
-    account_number: acc?.number ?? acc?.account_number ?? "",
-    account_name: acc?.account_name ?? acc?.name ?? "",
-    amount: parseFloat(depositData.value.amount),
-    remark: transactionNumber.value.trim(),
-    type: depositData.value.depositMethodName || "",
-    promotion_id: depositData.value.promotion ?? null,
-  };
+  const depositPayload = new FormData();
+  depositPayload.append("payment_type_id", depositData.value.depositMethod ?? "");
+  if (acc?.id != null) {
+    depositPayload.append("account_id", String(acc.id));
+  }
+  depositPayload.append("account_number", acc?.number ?? acc?.account_number ?? "");
+  depositPayload.append("account_name", acc?.account_name ?? acc?.name ?? "");
+  depositPayload.append("amount", String(parseFloat(depositData.value.amount)));
+  if (hasValidTransactionNumber.value) {
+    depositPayload.append("remark", String(transactionNumber.value).trim());
+  }
+  depositPayload.append("type", depositData.value.depositMethodName || "");
+  if (depositData.value.promotion != null && depositData.value.promotion !== "") {
+    depositPayload.append("promotion_id", String(depositData.value.promotion));
+  }
+  const imageFile = transactionImage.value?.[0]?.file;
+  if (imageFile) {
+    depositPayload.append("transaction_image", imageFile);
+  }
 
   try {
     showLoadingToast({
@@ -597,10 +665,26 @@ const handleSubmit = async () => {
   }
 };
 
-// Clear API error when user edits transaction number
+// Clear API error when user edits transaction number or image
 watch(transactionNumber, () => {
   if (apiErrorMessage.value) apiErrorMessage.value = "";
+  if (errors.value.transactionNumber || errors.value.proof) {
+    const nextErrors = { ...errors.value };
+    delete nextErrors.transactionNumber;
+    delete nextErrors.proof;
+    errors.value = nextErrors;
+  }
 });
+
+watch(transactionImage, () => {
+  if (apiErrorMessage.value) apiErrorMessage.value = "";
+  if (errors.value.transactionImage || errors.value.proof) {
+    const nextErrors = { ...errors.value };
+    delete nextErrors.transactionImage;
+    delete nextErrors.proof;
+    errors.value = nextErrors;
+  }
+}, { deep: true });
 
 // Go back to step 1: replace history so Step 1's "Back" goes to Account (no loop)
 const goBack = () => {
@@ -883,6 +967,7 @@ const goBack = () => {
               <input
                 v-model="transactionNumber"
                 type="text"
+                inputmode="numeric"
                 :placeholder="t('Transaction number', 'လုပ်ငန်းစဉ်နံပါတ်', '交易号', 'หมายเลขธุรกรรม')"
                 maxlength="6"
                 pattern="[0-9]{6}"
@@ -890,13 +975,52 @@ const goBack = () => {
               />
             </div>
           </div>
+
+          <span
+            v-if="errors.transactionNumber"
+            class="text-red-500 text-xs mt-1 block font-['Pyidaungsu','Padauk',sans-serif]"
+          >
+            {{ errors.transactionNumber }}
+          </span>
+
+          <div class="flex items-center gap-3 py-1">
+            <div class="h-px flex-1 bg-gray-200"></div>
+            <span class="text-xs text-gray-400 font-['Pyidaungsu','Padauk',sans-serif]">
+              {{ t("or", "သို့မဟုတ်", "或", "หรือ") }}
+            </span>
+            <div class="h-px flex-1 bg-gray-200"></div>
+          </div>
+
+          <div>
+            <p class="text-sm font-semibold text-red-500 mb-2 font-['Pyidaungsu','Padauk',sans-serif]">
+              {{ t("Upload transaction image", "ငွေလွှဲဓာတ်ပုံ တင်ပါ", "上传交易截图", "อัปโหลดรูปธุรกรรม") }}
+            </p>
+            <van-uploader
+              v-model="transactionImage"
+              :max-count="1"
+              :max-size="MAX_TRANSACTION_IMAGE_BYTES"
+              accept="image/jpeg,image/jpg,image/png,image/webp"
+              :before-read="onBeforeReadTransactionImage"
+              :disabled="isConfirm"
+              @oversize="onTransactionImageOversize"
+            />
+            <p class="text-xs text-gray-500 mt-1 font-['Pyidaungsu','Padauk',sans-serif]">
+              {{ t("JPG, PNG or WEBP, up to 5MB", "JPG၊ PNG သို့မဟုတ် WEBP၊ 5MB အထိ", "JPG、PNG 或 WEBP，最大 5MB", "JPG, PNG หรือ WEBP ไม่เกิน 5MB") }}
+            </p>
+            <span
+              v-if="errors.transactionImage"
+              class="text-red-500 text-xs mt-1 block font-['Pyidaungsu','Padauk',sans-serif]"
+            >
+              {{ errors.transactionImage }}
+            </span>
+          </div>
         </div>
 
         <span
-          v-if="errors.transactionNumber"
+          v-if="errors.proof"
           class="text-red-500 text-xs mt-1 block font-['Pyidaungsu','Padauk',sans-serif]"
         >
-          {{ errors.transactionNumber }}
+          {{ errors.proof }}
         </span>
 
         <!-- API error message (from deposit submit) -->
@@ -912,7 +1036,7 @@ const goBack = () => {
         <!-- Submit Button -->
         <button
           @click="handleSubmit"
-          :disabled="transactionNumber.length !== 6 || isConfirm"
+          :disabled="isConfirm"
           class="w-full bg-teal-500 hover:bg-teal-600 text-white py-3 rounded-lg font-semibold transition-all font-['Pyidaungsu','Padauk',sans-serif] disabled:opacity-50 disabled:cursor-not-allowed active:scale-95 mt-4"
         >
           <span v-if="!isConfirm">{{ t("Submit", "တင်ပြပါ။", "提交", "ส่ง") }}</span>
