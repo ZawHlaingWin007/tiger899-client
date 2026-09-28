@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 
 defineProps({
   visible: {
@@ -8,7 +8,59 @@ defineProps({
   },
 });
 
+const SIZE = 40;
+const MARGIN = 8;
+const DRAG_THRESHOLD = 8;
+const STORAGE_KEY = "tiger899-contact-fab-pos";
+
 const expanded = ref(false);
+const dragging = ref(false);
+
+let pointerId = null;
+let startX = 0;
+let startY = 0;
+let originX = 0;
+let originY = 0;
+let moved = false;
+
+const clamp = (x, y) => {
+  const maxX = Math.max(MARGIN, window.innerWidth - SIZE - MARGIN);
+  const maxY = Math.max(MARGIN, window.innerHeight - SIZE - MARGIN);
+  return {
+    x: Math.min(Math.max(MARGIN, x), maxX),
+    y: Math.min(Math.max(MARGIN, y), maxY),
+  };
+};
+
+const defaultPosition = () =>
+  clamp(window.innerWidth - SIZE - MARGIN, Math.round(window.innerHeight * 0.42));
+
+const readPosition = () => {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if (saved && Number.isFinite(saved.x) && Number.isFinite(saved.y)) {
+      return clamp(saved.x, saved.y);
+    }
+  } catch {
+    // Ignore unreadable storage and fall back to the default spot.
+  }
+  return defaultPosition();
+};
+
+const pos = ref(readPosition());
+const openBelow = computed(() => pos.value.y < 168);
+
+const onResize = () => {
+  pos.value = clamp(pos.value.x, pos.value.y);
+};
+
+onMounted(() => {
+  window.addEventListener("resize", onResize);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("resize", onResize);
+});
 
 const links = [
   {
@@ -28,25 +80,73 @@ const links = [
   },
 ];
 
-const toggle = () => {
-  expanded.value = !expanded.value;
+const onPointerDown = (event) => {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  dragging.value = true;
+  moved = false;
+  pointerId = event.pointerId;
+  startX = event.clientX;
+  startY = event.clientY;
+  originX = pos.value.x;
+  originY = pos.value.y;
+  event.currentTarget.setPointerCapture(event.pointerId);
 };
+
+const onPointerMove = (event) => {
+  if (!dragging.value || event.pointerId !== pointerId) return;
+  const dx = event.clientX - startX;
+  const dy = event.clientY - startY;
+  if (!moved) {
+    if (Math.hypot(dx, dy) < DRAG_THRESHOLD) return;
+    moved = true;
+    originX = pos.value.x - dx;
+    originY = pos.value.y - dy;
+  }
+  pos.value = clamp(originX + dx, originY + dy);
+};
+
+const finishPointer = (event, toggleOnTap) => {
+  if (event.pointerId !== pointerId) return;
+  dragging.value = false;
+  if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+    event.currentTarget.releasePointerCapture(event.pointerId);
+  }
+  pointerId = null;
+  if (moved) {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(pos.value));
+    } catch {
+      // Position still applies for this visit if storage is unavailable.
+    }
+    return;
+  }
+  if (toggleOnTap) expanded.value = !expanded.value;
+};
+
+const onPointerUp = (event) => finishPointer(event, true);
+const onPointerCancel = (event) => finishPointer(event, false);
 </script>
 
 <template>
   <transition name="slide-right">
     <div
       v-if="visible"
-      class="fixed right-0 top-[42%] z-40 flex flex-col items-end"
+      class="fixed z-40"
+      :style="{ left: `${pos.x}px`, top: `${pos.y}px` }"
     >
-      <transition-group name="fab-stack" tag="div" class="flex flex-col items-end gap-2 mb-2 pr-2">
+      <transition-group
+        name="fab-stack"
+        tag="div"
+        class="absolute left-1/2 flex w-max -translate-x-1/2 flex-col items-center gap-2"
+        :class="openBelow ? 'top-full mt-2' : 'bottom-full mb-2'"
+      >
         <a
           v-for="link in expanded ? links : []"
           :key="link.icon"
           :href="link.href"
           target="_blank"
           rel="noopener noreferrer"
-          class="fab-btn fab-dark w-11 h-11 md:w-12 md:h-12 rounded-full flex items-center justify-center text-white"
+          class="fab-btn fab-dark flex h-11 w-11 items-center justify-center rounded-full text-white md:h-12 md:w-12"
           :title="link.label"
         >
           <svg
@@ -93,13 +193,28 @@ const toggle = () => {
       <button
         type="button"
         class="fab-contact"
+        :class="{ 'is-dragging': dragging }"
         aria-label="Contact"
-        @click="toggle"
+        title="Drag to move"
+        @pointerdown="onPointerDown"
+        @pointermove="onPointerMove"
+        @pointerup="onPointerUp"
+        @pointercancel="onPointerCancel"
+        @contextmenu.prevent
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-          <path d="M4 13v-1a8 8 0 0 1 16 0v1" />
-          <path d="M4 13v4a2 2 0 0 0 2 2h1v-6H6a2 2 0 0 0-2 2z" />
-          <path d="M20 13v4a2 2 0 0 1-2 2h-1v-6h1a2 2 0 0 1 2 2z" />
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="18"
+          height="18"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
         </svg>
       </button>
     </div>
@@ -125,16 +240,22 @@ const toggle = () => {
 }
 
 .fab-contact {
-  width: 58px;
-  height: 58px;
+  width: 40px;
+  height: 40px;
   border: 0;
-  border-radius: 16px 0 0 16px;
+  border-radius: 50%;
   color: #fff;
   background: linear-gradient(180deg, #640ae0 0%, #511799 100%);
-  box-shadow: 0 8px 20px rgba(81, 23, 153, 0.45);
+  box-shadow: 0 6px 16px rgba(81, 23, 153, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+.fab-contact.is-dragging {
+  cursor: grabbing;
 }
 
 .fab-stack-enter-active,
@@ -144,6 +265,6 @@ const toggle = () => {
 .fab-stack-enter-from,
 .fab-stack-leave-to {
   opacity: 0;
-  transform: translateX(12px);
+  transform: translateY(8px);
 }
 </style>

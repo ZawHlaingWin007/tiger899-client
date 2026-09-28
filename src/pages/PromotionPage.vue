@@ -1,6 +1,7 @@
 <script setup>
 import { onMounted, ref, watch, computed } from "vue";
 import PromotionCard from "../components/PromotionCard.vue";
+import axios from "axios";
 import { useTranslation } from "../composables/useTranslation";
 import {
   MOCK_CATEGORIES,
@@ -8,7 +9,7 @@ import {
 } from "../data/mockPromotions";
 
 const { t } = useTranslation();
-const categories = ref([{ id: "all", name: "all" }, ...MOCK_CATEGORIES]);
+const categories = ref([]);
 const promotions = ref([]);
 const activeCategory = ref("all");
 const loading = ref(false);
@@ -22,18 +23,60 @@ const categoriesWithTranslation = computed(() => {
   return [allOption, ...categories.value.filter((c) => c.id !== "all")];
 });
 
-const loadPromotions = () => {
+const getAuthHeader = () => {
+  const token = localStorage.getItem("token");
+  return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
+const fetchCategories = async () => {
+  try {
+    const { data } = await axios.get("/promotion-categories?active=1", {
+      headers: getAuthHeader(),
+    });
+    const apiCategories = data.data || [];
+    categories.value = [
+      { id: "all", name: "all" },
+      ...(apiCategories.length > 0 ? apiCategories : MOCK_CATEGORIES),
+    ];
+  } catch (err) {
+    console.error(err);
+    categories.value = [{ id: "all", name: "all" }, ...MOCK_CATEGORIES];
+  }
+};
+
+// List page: show all (enabled) promotions; no deposit-eligibility filter
+const fetchPromotions = async () => {
   loading.value = true;
-  promotions.value = getMockPromotions(activeCategory.value);
-  loading.value = false;
+
+  try {
+    let url = "/promotions?active=1";
+
+    if (activeCategory.value !== "all") {
+      url += `&category_id=${activeCategory.value}`;
+    }
+
+    const { data } = await axios.get(url, { headers: getAuthHeader() });
+    const list = data.data ?? data ?? [];
+    const apiPromotions = Array.isArray(list) ? list : [];
+    promotions.value =
+      apiPromotions.length > 0
+        ? apiPromotions
+        : getMockPromotions(activeCategory.value);
+  } catch (err) {
+    console.error(err);
+    promotions.value = getMockPromotions(activeCategory.value);
+  } finally {
+    loading.value = false;
+  }
 };
 
 onMounted(() => {
-  loadPromotions();
+  fetchCategories();
+  fetchPromotions();
 });
 
 watch(activeCategory, () => {
-  loadPromotions();
+  fetchPromotions();
 });
 </script>
 
