@@ -33,6 +33,7 @@ import WithdrawHistoryModal from "../components/WithdrawHistoryModal.vue";
 import LuckySpinModal from "../components/LuckySpinModal.vue";
 import ProfileEditModal from "../components/ProfileEditModal.vue";
 import { useModal } from "../composables/useModal";
+import { useSpinWheelFeature } from "../composables/useSpinWheelFeature";
 import { useTranslation } from "../composables/useTranslation";
 
 const { t } = useTranslation();
@@ -93,6 +94,7 @@ const {
   openRegisterModal,
   openLoginModal,
 } = useModal();
+const { isEnabled: spinWheelEnabled, loadSpinWheelFeature } = useSpinWheelFeature();
 const MOCK_WELCOME_IMAGES = [
   {
     title: "Welcome",
@@ -133,6 +135,7 @@ const fetchWelcomeImages = async () => {
 
 // Show welcome modal on mount (you can add logic to show only once per session)
 onMounted(() => {
+  loadSpinWheelFeature();
   // Check if user has seen the modal in this session
   const hasSeenModal = sessionStorage.getItem("hasSeenWelcomeModal");
   if (!hasSeenModal) {
@@ -143,8 +146,9 @@ onMounted(() => {
 // Lucky Spin: open on home only when logged in (first load + return to home).
 // Skip with `?noLuckySpin=1` (e.g. while developing).
 watch(
-  () => [route.name, route.query.noLuckySpin, isUserLoggedIn.value],
+  () => [route.name, route.query.noLuckySpin, isUserLoggedIn.value, spinWheelEnabled.value],
   () => {
+    if (!spinWheelEnabled.value) return;
     if (route.name !== "home") return;
     if (!isUserLoggedIn.value) return;
     const skip = route.query.noLuckySpin;
@@ -622,7 +626,7 @@ const checkPopupStatus = () => {
 
     <!-- Lucky Wheel quick entry (logged-in only; mobile: above bottom nav) -->
     <button
-      v-if="isUserLoggedIn"
+      v-if="isUserLoggedIn && spinWheelEnabled"
       type="button"
       class="fixed right-3 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-amber-500/60 bg-gradient-to-b from-amber-400 to-amber-600 text-lg shadow-lg shadow-amber-900/40 transition active:scale-95 md:bottom-8 md:right-6 bottom-[calc(9.5rem+env(safe-area-inset-bottom,0px))]"
       :aria-label="t('Lucky Wheel', 'ကံစမ်းလည်ပတ်', '幸运转盘', 'วงล้อนำโชค')"

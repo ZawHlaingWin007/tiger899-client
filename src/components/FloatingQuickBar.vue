@@ -1,12 +1,18 @@
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useTranslation } from "@/composables/useTranslation";
 import { useModal } from "@/composables/useModal";
+import { useSpinWheelFeature } from "@/composables/useSpinWheelFeature";
 
 const router = useRouter();
 const { t } = useTranslation();
 const { openLuckySpinModal } = useModal();
+const { isEnabled: spinWheelEnabled, loadSpinWheelFeature } = useSpinWheelFeature();
+
+onMounted(() => {
+  loadSpinWheelFeature();
+});
 
 const expanded = ref(false);
 const dismissed = ref(false);
@@ -42,7 +48,9 @@ const items = computed(() => {
     ...rest,
     label: t(...labelKey),
   }));
-  return [...list, ...staticWithLabels];
+  return [...list, ...staticWithLabels].filter(
+    (item) => item.id !== "spin" || spinWheelEnabled.value,
+  );
 });
 
 const go = (to) => {

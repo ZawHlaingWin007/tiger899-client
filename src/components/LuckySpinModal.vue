@@ -6,6 +6,7 @@ import axios from "axios";
 import { showDialog, showSuccessToast, showFailToast } from "vant";
 import { useTranslation } from "../composables/useTranslation";
 import { useModal } from "../composables/useModal";
+import { useSpinWheelFeature } from "../composables/useSpinWheelFeature";
 import { usePerformanceMode } from "../composables/usePerformanceMode";
 import {
   useLuckySpin,
@@ -31,6 +32,7 @@ const store = useStore();
 const route = useRoute();
 const { t } = useTranslation();
 const { openLoginModal, openDepositModal, isDepositModalOpen } = useModal();
+const { isEnabled: spinWheelEnabled, loadSpinWheelFeature } = useSpinWheelFeature();
 const { reduceEffects: reduceEffectsMode } = usePerformanceMode();
 
 const {
@@ -110,6 +112,10 @@ async function loadSpinWheelFromApi() {
   wheelLoading.value = true;
   try {
     const { data, meta } = await getSpinWheel();
+    if (meta?.is_enabled === false) {
+      emit("close");
+      return;
+    }
     applyWheelFromApi(data, meta);
   } catch (err) {
     const norm = normalizeSpinwheelError(err);
@@ -150,7 +156,8 @@ watch(
   () => props.isOpen,
   async (open) => {
     if (open) {
-      if (!isLoggedIn.value) {
+      await loadSpinWheelFeature();
+      if (!isLoggedIn.value || !spinWheelEnabled.value) {
         emit("close");
         return;
       }
