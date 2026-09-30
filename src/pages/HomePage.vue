@@ -1345,15 +1345,6 @@ const handleFishingSectionClick = () => {
         </template>
       </div>
 
-      <div class="px-4 text-center max-w-3xl mx-auto">
-        <h2 class="text-base md:text-xl font-bold text-white font-['Pyidaungsu','Padauk',sans-serif]">
-          {{ t("Welcome to the best online casino in Myanmar.", "မြန်မာနိုင်ငံတွင်အကောင်းဆုံးအွန်လိုင်းကာစီနိုမှကြိုဆိုပါသည်။", "欢迎来到缅甸最佳在线娱乐场。", "ยินดีต้อนรับสู่คาสิโนออนไลน์ที่ดีที่สุดในเมียนมาร์") }}
-        </h2>
-        <p class="mt-2 text-xs md:text-sm text-white/75 font-['Pyidaungsu','Padauk',sans-serif]">
-          {{ t("We provide a premium online gaming experience with slots, live casino, sports and more.", "ကျွန်ုပ်တို့သည် ပရီမီယံအွန်လိုင်းလောင်းကစားအတွေ့အကြုံကို ပေးဆောင်ပါသည်။", "我们提供优质线上娱乐体验。", "เรามอบประสบการณ์เดิมพันออนไลน์ระดับพรีเมียม") }}
-        </p>
-      </div>
-
       <GameCategoryScroller />
 
     <!-- Hot Games Section -->
