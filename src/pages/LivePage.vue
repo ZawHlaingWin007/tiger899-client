@@ -39,24 +39,6 @@ const cardGamesData = [
     action: "changeSideNav",
     value: "PP Live",
   },
-  {
-    id: "BG",
-    gameID: "BG",
-    provider: "BG",
-    name: "BG",
-    image: "https://storage.googleapis.com/spacetech2/yu95/big-gaming.avif",
-    action: "changeSideNav",
-    value: "BG",
-  },
-  {
-    id: "YeeBet",
-    gameID: "YeeBet",
-    provider: "YeeBet",
-    name: "YeeBet",
-    image: "https://storage.googleapis.com/spacetech2/yu95/YEEBET.webp",
-    action: "changeSideNav",
-    value: "YeeBet",
-  },
 ];
 
 // Transform card games for GameCard component
