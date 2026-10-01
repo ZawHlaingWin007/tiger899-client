@@ -217,9 +217,9 @@ const handleDownloadConfirm = () => {
   router.push({ name: "download" });
 };
 
-import registrationImg from "@/assets/Yuopenaccount.jpg";
-import depositImg from "@/assets/Yudeposit.jpg";
-import withdrawalImg from "@/assets/Yuwithdraw.jpg";
+import registrationImg from "@/assets/Tgaccount.png";
+import depositImg from "@/assets/Tgdeposit.png";
+import withdrawalImg from "@/assets/Tgwithdraw.png";
 import {
   gamesOverviewContent,
   termsContent,
