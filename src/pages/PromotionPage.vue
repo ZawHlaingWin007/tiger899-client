@@ -58,13 +58,15 @@ const fetchPromotions = async () => {
     const { data } = await axios.get(url, { headers: getAuthHeader() });
     const list = data.data ?? data ?? [];
     const apiPromotions = Array.isArray(list) ? list : [];
-    promotions.value =
-      apiPromotions.length > 0
-        ? apiPromotions
-        : getMockPromotions(activeCategory.value);
+    // promotions.value =
+    //   apiPromotions.length > 0
+    //     ? apiPromotions
+    //     : getMockPromotions(activeCategory.value);
+    promotions.value = apiPromotions;
   } catch (err) {
     console.error(err);
-    promotions.value = getMockPromotions(activeCategory.value);
+    // promotions.value = getMockPromotions(activeCategory.value);
+    promotions.value = [];
   } finally {
     loading.value = false;
   }
