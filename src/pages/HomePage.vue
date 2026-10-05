@@ -1310,36 +1310,56 @@ const handleFishingSectionClick = () => {
     </div>
 
     <div class="ixmm-home-body space-y-4 md:space-y-6">
-      <div class="flex items-center justify-center gap-3 px-3 pt-3">
+      <div class="flex items-center justify-center gap-4 px-3 pt-3">
         <template v-if="isLoggedIn">
           <button
             type="button"
-            class="btn-ixmm-register px-6 py-2 text-sm font-['Pyidaungsu','Padauk',sans-serif]"
+            class="home-cta btn-ixmm-register font-['Pyidaungsu','Padauk',sans-serif]"
             @click="openDepositModal"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1" />
+              <path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4" />
+            </svg>
             {{ t("Deposit", "ငွေသွင်း", "存款", "ฝากเงิน") }}
           </button>
           <button
             type="button"
-            class="btn-ixmm-login px-6 py-2 text-sm font-['Pyidaungsu','Padauk',sans-serif]"
+            class="home-cta btn-ixmm-login font-['Pyidaungsu','Padauk',sans-serif]"
             @click="openWithdrawModal"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2" y="5" width="20" height="14" rx="2" />
+              <path d="M2 10h20" />
+              <path d="M6 15h4" />
+            </svg>
             {{ t("Withdraw", "ငွေထုတ်", "提款", "ถอนเงิน") }}
           </button>
         </template>
         <template v-else>
           <button
             type="button"
-            class="btn-ixmm-login px-6 py-2 text-sm font-['Pyidaungsu','Padauk',sans-serif]"
+            class="home-cta btn-ixmm-login font-['Pyidaungsu','Padauk',sans-serif]"
             @click="openLoginModal"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+              <path d="m10 17 5-5-5-5" />
+              <path d="M15 12H3" />
+            </svg>
             {{ t("Login", "လော့ဂ်အင်", "登录", "เข้าสู่ระบบ") }}
           </button>
           <button
             type="button"
-            class="btn-ixmm-register px-6 py-2 text-sm font-['Pyidaungsu','Padauk',sans-serif]"
+            class="home-cta btn-ixmm-register font-['Pyidaungsu','Padauk',sans-serif]"
             @click="openRegisterModal"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+              <circle cx="9" cy="7" r="4" />
+              <path d="M19 8v6" />
+              <path d="M22 11h-6" />
+            </svg>
             {{ t("Register", "အကောင့်ဖွင့်ရန်", "注册", "สมัครบัญชี") }}
           </button>
         </template>
@@ -1700,6 +1720,39 @@ const handleFishingSectionClick = () => {
 </template>
 
 <style scoped>
+.home-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 8.75rem;
+  min-height: 2.6rem;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.925rem;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.home-cta svg {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex-shrink: 0;
+}
+
+@media (min-width: 768px) {
+  .home-cta {
+    min-width: 10.5rem;
+    padding: 0.6rem 1.4rem;
+    font-size: 1.05rem;
+    gap: 0.55rem;
+  }
+
+  .home-cta svg {
+    width: 1.2rem;
+    height: 1.2rem;
+  }
+}
+
 .marquee-container {
   overflow: hidden;
   white-space: nowrap;
