@@ -288,7 +288,7 @@ watch(
               {{ t("Logging in...", "ဝင်နေသည်...", "登录中...", "กำลังเข้าสู่ระบบ...") }}
             </template>
           </button>
-          <button
+          <!-- <button
             type="button"
             class="btn-app btn-app-gold shrink-0 px-3 py-2.5 flex items-center justify-center gap-1.5 disabled:opacity-50 font-semibold text-sm whitespace-nowrap font-['Pyidaungsu','Padauk',sans-serif]"
             :aria-label="t('Quick Login', 'အမြန်ဝင်မည်', '快速登录', 'เข้าสู่ระบบด่วน')"
@@ -320,7 +320,7 @@ watch(
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
             </svg>
             {{ t("Quick Login", "အမြန်ဝင်မည်", "快速登录", "เข้าสู่ระบบด่วน") }}
-          </button>
+          </button> -->
         </div>
 
         <!-- Viber Contact Link -->

@@ -200,14 +200,14 @@ const handleQuickLogin = () => {
         >
           {{ t("Login", "လော့ဂ်အင်", "登录", "เข้าสู่ระบบ") }}
         </button>
-        <!-- <button
+        <button
           type="button"
           class="btn-ixmm-register px-5 py-1.5 text-sm font-['Pyidaungsu','Padauk',sans-serif]"
           @click.prevent="openRegisterModal"
         >
           {{ t("Register", "အကောင့်ဖွင့်ရန်", "注册", "สมัครบัญชี") }}
-        </button> -->
-        <button
+        </button>
+        <!-- <button
           type="button"
           class="btn-ixmm-quick-login px-4 py-1.5 text-sm flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap font-['Pyidaungsu','Padauk',sans-serif]"
           :aria-label="t('Quick Login', 'အမြန်ဝင်မည်', '快速登录', 'เข้าสู่ระบบด่วน')"
@@ -239,7 +239,7 @@ const handleQuickLogin = () => {
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
           {{ t("Quick Login", "အမြန်ဝင်မည်", "快速登录", "เข้าสู่ระบบด่วน") }}
-        </button>
+        </button> -->
       </div>
     </div>
 
