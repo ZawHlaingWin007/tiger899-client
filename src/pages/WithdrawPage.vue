@@ -231,13 +231,6 @@ function getTabLogo(tab) {
   return tab?.logo_url || DEFAULT_LOGO[tab?.contentKey] || null;
 }
 
-function maskAccount(value) {
-  if (!value) return "****";
-  const s = String(value);
-  const last4 = s.length >= 4 ? s.slice(-4) : s;
-  return "********" + last4;
-}
-
 function formatAccountDate(value) {
   if (!value) return "";
   const d = new Date(value);
@@ -254,6 +247,18 @@ function formatAccountDateTime(value) {
   const min = String(d.getMinutes()).padStart(2, "0");
   const s = String(d.getSeconds()).padStart(2, "0");
   return `${y}-${m}-${day} ${h}:${min}:${s}`;
+}
+
+function formatAccountNumber(account) {
+  const raw = String(
+    account?.account_number ?? account?.accountNumber ?? account?.number ?? "",
+  ).trim();
+  if (!raw) return "—";
+  const compact = raw.replace(/\s+/g, "");
+  if (/^\d{8,19}$/.test(compact)) {
+    return compact.replace(/(.{4})/g, "$1 ").trim();
+  }
+  return raw;
 }
 
 /** Categorize user bank by bankType.name for logo/tab (kbz, wave, cb, aya, ayabank, kbzbank, yomabank, uabbank, bank, usdttrc20, usdterc20, btc, eth, crypto). */
@@ -482,63 +487,83 @@ onMounted(async () => {
               <!-- Single card for this account -->
               <div class="px-4">
                 <div
-                  class="bank-card relative overflow-hidden rounded-2xl px-5 mt-5 py-5 text-white font-['Pyidaungsu','Padauk',sans-serif]"
+                  class="bank-card relative overflow-hidden rounded-3xl px-5 py-5 mt-2 text-white font-['Pyidaungsu','Padauk',sans-serif]"
                 >
-                  <div
-                    class="bank-card-pattern absolute inset-0"
-                    aria-hidden="true"
-                  ></div>
-                  <div class="relative z-10 flex flex-col gap-4">
-                    <div class="flex items-center gap-2.5">
-                      <div
-                        class="bank-card-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/25"
-                      >
-                        <img
-                          v-if="getTabLogo(tab)"
-                          :src="getTabLogo(tab)"
-                          :alt="tab.name"
-                          class="h-6 w-6 object-contain"
-                        />
-                        <svg
-                          v-else
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="h-6 w-6"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                          stroke-width="1.5"
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                        >
-                          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
-                          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
-                          <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
-                        </svg>
+                  <div class="bank-card-glow" aria-hidden="true"></div>
+                  <div class="relative z-10 flex flex-col gap-5">
+                    <div class="flex items-center justify-between gap-3">
+                      <div class="flex items-center gap-3 min-w-0">
+                        <div class="bank-card-logo">
+                          <img
+                            v-if="getTabLogo(tab)"
+                            :src="getTabLogo(tab)"
+                            :alt="tab.name"
+                            class="h-8 w-8 object-contain"
+                          />
+                          <svg
+                            v-else
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-6 w-6 text-[#511799]"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            stroke-width="1.5"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                          >
+                            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4" />
+                            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5" />
+                            <path d="M18 12a2 2 0 0 0 0 4h4v-4h-4z" />
+                          </svg>
+                        </div>
+                        <div class="min-w-0">
+                          <p class="bank-card-kicker">
+                            {{ t("Payout account", "ထုတ်ယူအကောင့်", "提现账户", "บัญชีถอน") }}
+                          </p>
+                          <p class="text-lg font-semibold leading-tight truncate">
+                            {{ tab.name }}
+                          </p>
+                        </div>
                       </div>
-                      <span class="text-2xl font-normal">{{ tab.name }}</span>
+                      <div class="bank-card-chip" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                      </div>
                     </div>
-                    <p class="text-2xl font-bold tracking-widest">
-                      {{
-                        tab.account.masked_number ||
-                        maskAccount(
-                          tab.account.account_number ??
-                            tab.account.accountNumber ??
-                            tab.account.number,
-                        )
-                      }}
-                    </p>
-                    <p
-                      class="bank-card-time text-base font-medium text-white tabular-nums tracking-wide"
-                    >
-                      {{
-                        formatAccountDateTime(
-                          tab.account.connected_at ??
-                            tab.account.connectedAt ??
-                            tab.account.date ??
-                            tab.account.created_at,
-                        )
-                      }}
-                    </p>
+
+                    <div class="min-w-0">
+                      <p class="bank-card-label">
+                        {{ t("Account name", "အကောင့်အမည်", "账户姓名", "ชื่อบัญชี") }}
+                      </p>
+                      <p class="text-xl font-semibold leading-snug truncate">
+                        {{ tab.account.name || "—" }}
+                      </p>
+                    </div>
+
+                    <div class="min-w-0">
+                      <p class="bank-card-label">
+                        {{ t("Account number", "အကောင့်နံပါတ်", "账号", "หมายเลขบัญชี") }}
+                      </p>
+                      <p class="bank-card-number">
+                        {{ formatAccountNumber(tab.account) }}
+                      </p>
+                    </div>
+
+                    <div class="flex items-center justify-between gap-3 border-t border-white/15 pt-3">
+                      <p class="text-xs text-white/70">
+                        {{ t("Connected", "ချိတ်ဆက်ထားသည်", "已连接", "เชื่อมต่อเมื่อ") }}
+                      </p>
+                      <p class="bank-card-time text-xs font-medium text-white/90 tabular-nums">
+                        {{
+                          formatAccountDateTime(
+                            tab.account.connected_at ??
+                              tab.account.connectedAt ??
+                              tab.account.date ??
+                              tab.account.created_at,
+                          ) || "—"
+                        }}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -711,26 +736,82 @@ onMounted(async () => {
   background: white;
 }
 
-/* E-wallet / bank card: purple-to-cyan gradient, rounded, with subtle pattern */
+/* Payout card: tiger purple with a gold edge, matching the app theme */
 .bank-card {
-  background: linear-gradient(
-    90deg,
-    #a78bfa 0%,
-    #c4b5fd 35%,
-    #93c5fd 70%,
-    #7dd3fc 100%
-  );
-  box-shadow: 0 4px 14px rgba(167, 139, 250, 0.25);
+  background:
+    radial-gradient(120% 90% at 100% -10%, rgba(255, 211, 130, 0.28), transparent 46%),
+    radial-gradient(70% 80% at -10% 110%, rgba(100, 10, 224, 0.55), transparent 52%),
+    linear-gradient(155deg, #6a22c9 0%, #511799 46%, #1a0633 100%);
+  border: 1px solid rgba(255, 211, 130, 0.38);
+  box-shadow:
+    0 18px 36px -20px rgba(81, 23, 153, 0.85),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.bank-card-pattern {
-  background-image: url("data:image/svg+xml,%3Csvg width='20' height='100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 20 Q 5 30 0 40 Q 5 50 0 60 Q 5 70 0 80' stroke='rgba(255,255,255,0.12)' fill='none' stroke-width='1'/%3E%3Cpath d='M10 10 Q 15 25 10 40 Q 15 55 10 70 Q 15 85 10 100' stroke='rgba(255,255,255,0.1)' fill='none' stroke-width='1'/%3E%3C/svg%3E");
-  background-size: 24px 100px;
-  opacity: 0.9;
+.bank-card-glow {
+  position: absolute;
+  top: -48px;
+  right: -36px;
+  width: 160px;
+  height: 160px;
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.16), transparent 68%);
+  pointer-events: none;
 }
 
-.bank-card-icon {
-  backdrop-filter: blur(6px);
+.bank-card-logo {
+  display: flex;
+  height: 48px;
+  width: 48px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.18);
+}
+
+.bank-card-chip {
+  position: relative;
+  height: 32px;
+  width: 42px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: linear-gradient(145deg, #ffe8d0 0%, #ffd382 42%, #c9952e 100%);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.45);
+}
+
+.bank-card-chip span {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  height: 1px;
+  background: rgba(122, 74, 16, 0.45);
+}
+
+.bank-card-chip span:first-child {
+  top: 11px;
+}
+
+.bank-card-chip span:last-child {
+  top: 20px;
+}
+
+.bank-card-kicker,
+.bank-card-label {
+  color: rgba(255, 232, 208, 0.82);
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.bank-card-number {
+  margin-top: 2px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  line-height: 1.45;
+  word-break: break-all;
 }
 
 .bank-card-time {
