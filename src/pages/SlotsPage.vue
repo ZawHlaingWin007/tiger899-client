@@ -180,7 +180,8 @@ const imageLinkGenerate = (gameId, type) => {
     return `https://cdn.myanmarshankoeme.com/build/assets/img/bf688/fachai/${gameId}.webp`;
   } if (type === 'PGSoft') {
     // return `https://space-tech.sgp1.cdn.digitaloceanspaces.com/slot-images/pgsoft/pgsoft_${gameId}.webp`;
-    return `https://cdn.myanmarshankoeme.com/build/assets/img/fgg/${gameId}.webp`;
+    // return `https://cdn.myanmarshankoeme.com/build/assets/img/fgg/${gameId}.webp`;
+    return `https://new-cdn.myanmarshankoeme.com/AG_HOT_PG/${gameId}.avif`;
   } if (type === 'JOKER' || type === 'Joker') {
     return `https://space-tech.sgp1.cdn.digitaloceanspaces.com/slot-images/joker/${gameId}.webp`;
   } if (type === '5G') {
