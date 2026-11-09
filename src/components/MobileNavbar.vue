@@ -12,7 +12,7 @@ import { getProfileImageUrl } from "../composables/useProfileImage";
 import { useQuickLogin } from "../composables/useQuickLogin";
 
 const router = useRouter();
-const { isQuickLogin, quickLogin } = useQuickLogin();
+const { isQuickLogin, quickLogin, showQuickLogin } = useQuickLogin();
 const store = useStore();
 const { openDepositModal, openWithdrawModal, openDownloadModal } = useModal();
 const { t } = useTranslation();
@@ -243,7 +243,8 @@ const apkDownloadUrl =
         >
           {{ t("Register", "အကောင့်ဖွင့်ရန်", "注册", "สมัครบัญชี") }}
         </button>
-        <!-- <button
+        <button
+          v-if="showQuickLogin"
           type="button"
           class="btn-ixmm-quick-login px-2 py-1 text-[12px] flex items-center justify-center gap-1 shrink-0 whitespace-nowrap font-['Pyidaungsu','Padauk',sans-serif]"
           :aria-label="t('Quick Login', 'အမြန်ဝင်မည်', '快速登录', 'เข้าสู่ระบบด่วน')"
@@ -275,7 +276,7 @@ const apkDownloadUrl =
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
           </svg>
           {{ t("Quick Login", "အမြန်ဝင်မည်", "快速登录", "เข้าสู่ระบบด่วน") }}
-        </button> -->
+        </button>
       </div>
     </div>
 

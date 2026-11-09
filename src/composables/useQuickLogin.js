@@ -26,7 +26,34 @@ export function ensureDeviceUuid() {
 }
 
 /**
- * One-tap login via persisted device_uuid (matches shweyote quick login).
+ * Bossy parity: အမြန်ဝင်မည် is offered only on the play / play2 / play3 hosts.
+ * play → TikTok, play2 → G, play3 → Facebook.
+ * play2 and play3 are checked before play so play2.example.com is not treated as play.
+ */
+export function quickLoginHost(hostname) {
+  const host = String(
+    hostname ??
+      (typeof window !== "undefined" ? window.location.hostname : ""),
+  ).toLowerCase();
+
+  const isPlay3 = host === "play3" || host.startsWith("play3.");
+  const isPlay2 = host === "play2" || host.startsWith("play2.");
+  const isPlay = host === "play" || host.startsWith("play.");
+
+  let platform = null;
+  if (isPlay2) platform = "G";
+  else if (isPlay3) platform = "Facebook";
+  else if (isPlay) platform = "TikTok";
+
+  return {
+    show: isPlay || isPlay2 || isPlay3,
+    platform,
+  };
+}
+
+/**
+ * One-tap login via persisted device_uuid.
+ * The action is shown only on the play / play2 / play3 subdomains.
  */
 export function useQuickLogin() {
   const isQuickLogin = ref(false);
@@ -34,6 +61,7 @@ export function useQuickLogin() {
   const router = useRouter();
   const route = useRoute();
   const { t } = useTranslation();
+  const { show: showQuickLogin, platform: hostPlatform } = quickLoginHost();
 
   const quickLogin = async ({ onSuccess, redirectTo = "/" } = {}) => {
     if (isQuickLogin.value) {
@@ -70,6 +98,7 @@ export function useQuickLogin() {
 
       if (res.data.is_first_time === 1) {
         const platform =
+          hostPlatform ||
           route.query.ref ||
           route.query.referrer ||
           localStorage.getItem("user_platform_ref");
@@ -115,5 +144,5 @@ export function useQuickLogin() {
     }
   };
 
-  return { isQuickLogin, quickLogin };
+  return { isQuickLogin, quickLogin, showQuickLogin };
 }
