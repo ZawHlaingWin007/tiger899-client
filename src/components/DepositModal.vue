@@ -254,20 +254,11 @@ const requiredClaimableAmount = computed(() =>
   getPromotionClaimableAmount(selectedPromotionObj.value)
 );
 const claimableAmountError = computed(() => {
-  const required = requiredClaimableAmount.value;
-  if (!required) return "";
-  const amount = Number(depositAmount.value);
-  if (
-    depositAmount.value == null ||
-    String(depositAmount.value).trim() === "" ||
-    !Number.isFinite(amount)
-  ) {
-    return "";
-  }
-  if (amount < required) {
-    return claimableAmountMessage(t, required);
-  }
-  return "";
+  const promotion = selectedPromotionObj.value;
+  if (!promotion || isNoDepositPromotion.value) return "";
+  const minimum = getPromotionClaimableAmount(promotion);
+  if (!minimum || Number(depositAmount.value || 0) >= minimum) return "";
+  return claimableAmountMessage(t, minimum);
 });
 const depositAmountMeetsMin = computed(() => {
   const n = Number(depositAmount.value);
@@ -1046,6 +1037,18 @@ watch(
               </Radio>
             </div>
           </RadioGroup>
+          <p
+            v-if="selectedPromotionObj && selectedPromotionObj.claim_once_per_user && selectedPromotionObj.claimed"
+            class="text-red-300 text-xs sm:text-sm mt-2 font-['Pyidaungsu','Padauk',sans-serif]"
+          >
+            {{ t("You have already claimed this promotion.", "ဤပရိုမိုးရှင်းကို ရယူပြီးသားဖြစ်ပါသည်။", "您已经领取过此优惠。", "คุณได้รับโปรโมชั่นนี้แล้ว") }}
+          </p>
+          <p
+            v-else-if="claimableAmountError"
+            class="text-red-300 text-xs sm:text-sm mt-2 font-['Pyidaungsu','Padauk',sans-serif]"
+          >
+            {{ claimableAmountError }}
+          </p>
         </div>
 
         <!-- Claim free bonus when a no-deposit promotion is selected -->

@@ -176,20 +176,11 @@ const requiredClaimableAmount = computed(() =>
 );
 
 const claimableAmountError = computed(() => {
-  const required = requiredClaimableAmount.value;
-  if (!required) return "";
-  const amount = Number(depositAmount.value);
-  if (
-    depositAmount.value == null ||
-    String(depositAmount.value).trim() === "" ||
-    !Number.isFinite(amount)
-  ) {
-    return "";
-  }
-  if (amount < required) {
-    return claimableAmountMessage(t, required);
-  }
-  return "";
+  const promotion = selectedPromotionObj.value;
+  if (!promotion || isNoDepositPromotion.value) return "";
+  const minimum = getPromotionClaimableAmount(promotion);
+  if (!minimum || Number(depositAmount.value || 0) >= minimum) return "";
+  return claimableAmountMessage(t, minimum);
 });
 
 const depositAmountInRange = computed(() => {
@@ -416,6 +407,7 @@ async function claimFreePromotion() {
     closeToast();
     const raw = getApiErrorMessage(error) || error?.message || "";
     const claimableMsg = translateClaimableAmountApiError(t, raw);
+    const genericFailure = !raw || raw.startsWith("Request failed");
     const msg =
       raw === "You have already claimed this promotion." || raw === "Already claimed"
         ? t(
@@ -424,7 +416,9 @@ async function claimFreePromotion() {
             "您已经领取过此优惠。",
             "คุณได้รับโปรโมชั่นนี้แล้ว"
           )
-        : claimableMsg || t("Claim failed", "ရယူ၍မရပါ", "领取失败", "รับไม่สำเร็จ");
+        : claimableMsg || (genericFailure
+          ? t("Claim failed", "ရယူ၍မရပါ", "领取失败", "รับไม่สำเร็จ")
+          : raw);
     await showDialog({
       title: t("Error", "အမှား", "错误", "ข้อผิดพลาด"),
       message: msg,
@@ -940,6 +934,19 @@ const goBack = () => {
               </Radio>
             </div>
           </RadioGroup>
+
+          <span
+            v-if="selectedPromotionObj && selectedPromotionObj.claim_once_per_user && selectedPromotionObj.claimed"
+            class="text-red-500 text-xs sm:text-sm mt-2 block font-['Pyidaungsu','Padauk',sans-serif]"
+          >
+            {{ t("You have already claimed this promotion.", "ဤပရိုမိုးရှင်းကို ရယူပြီးသားဖြစ်ပါသည်။", "您已经领取过此优惠。", "คุณได้รับโปรโมชั่นนี้แล้ว") }}
+          </span>
+          <span
+            v-else-if="claimableAmountError"
+            class="text-red-500 text-xs sm:text-sm mt-2 block font-['Pyidaungsu','Padauk',sans-serif]"
+          >
+            {{ claimableAmountError }}
+          </span>
 
           <!-- Loading State -->
           <div

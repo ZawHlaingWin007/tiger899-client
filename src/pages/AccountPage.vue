@@ -42,6 +42,31 @@ const errors = ref({});
 const authUser = computed(() => store.state.authUser || {});
 const userBalance = computed(() => store.state.amount || 0);
 const language = computed(() => store.state.language || "mm");
+const lossReturnLoaded = ref(false);
+const claimingLossReturn = ref(false);
+const lossReturn = ref({
+  loss_return_amount: 0,
+  can_claim: false,
+  code: "empty",
+  message: "",
+});
+
+const lossReturnNote = computed(() => {
+  if (lossReturn.value.code === "available") {
+    return t(
+      "Loss Return is available to claim.",
+      "လျော့ကြေး ပြန်အမ်းငွေ ရယူနိုင်ပါသည်။",
+      "可以领取亏损返还。",
+      "สามารถรับเงินคืนยอดเสียได้"
+    );
+  }
+  return t(
+    "No Loss Return is available to claim.",
+    "ရယူနိုင်သော လျော့ကြေး ပြန်အမ်းငွေ မရှိပါ။",
+    "暂无可领取的亏损返还。",
+    "ไม่มีเงินคืนยอดเสียให้รับ"
+  );
+});
 
 // User data for display (profile image from CDN using authUser.profile_image 1–10)
 const user = computed(() => ({
@@ -72,6 +97,7 @@ const copyUsername = () => {
 
 const refreshBalance = async () => {
   await store.dispatch("fetchUser");
+  await loadLossReturn();
   showSuccessToast({
     message: t(
       "Balance refreshed!",
@@ -329,8 +355,68 @@ onMounted(async () => {
   const authUserData = await store.dispatch("fetchUser");
   if (!authUserData) {
     openLoginModal();
+    return;
   }
+  await loadLossReturn();
 });
+
+async function loadLossReturn() {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    lossReturnLoaded.value = false;
+    return;
+  }
+  try {
+    const res = await axios.get("/user/loss-return", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    lossReturn.value = res.data?.data || lossReturn.value;
+    lossReturnLoaded.value = true;
+  } catch (error) {
+    lossReturnLoaded.value = false;
+  }
+}
+
+async function claimLossReturn() {
+  if (!lossReturn.value.can_claim || claimingLossReturn.value) {
+    return;
+  }
+  claimingLossReturn.value = true;
+  showLoadingToast({
+    message: t("Loading...", "ဆောင်ရွက်နေသည်...", "加载中...", "กำลังโหลด..."),
+    duration: 0,
+    forbidClick: true,
+  });
+  try {
+    const res = await axios.post("/user/loss-return/claim", null, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    closeToast();
+    const claimed = Number(res.data?.data?.claimed_amount || 0).toLocaleString();
+    await store.dispatch("fetchUser");
+    await loadLossReturn();
+    showSuccessToast({
+      message: t(
+        `Loss Return claimed. ${claimed} MMK`,
+        `လျော့ကြေး ပြန်အမ်းငွေ ရယူပြီးပါပြီ။ ${claimed} MMK`,
+        `已领取亏损返还 ${claimed} MMK`,
+        `รับเงินคืนยอดเสียแล้ว ${claimed} MMK`
+      ),
+      position: "top",
+    });
+  } catch (error) {
+    closeToast();
+    const message = error?.response?.data?.message || t(
+      "Unable to claim Loss Return.",
+      "လျော့ကြေး ပြန်အမ်းငွေ ရယူ၍မရပါ။",
+      "无法领取亏损返还。",
+      "ไม่สามารถรับเงินคืนยอดเสียได้"
+    );
+    showFailToast({ message, position: "top" });
+  } finally {
+    claimingLossReturn.value = false;
+  }
+}
 </script>
 
 <template>
@@ -493,6 +579,35 @@ onMounted(async () => {
                     ></path>
                   </svg>
                 </button>
+              </div>
+
+              <div
+                v-if="lossReturnLoaded"
+                class="mt-4 rounded-2xl border border-black/10 bg-[#F7FAFC] p-4"
+              >
+                <div class="flex items-center justify-between gap-3">
+                  <div>
+                    <p class="text-sm text-black/70 font-['Pyidaungsu','Padauk',sans-serif] mb-1">
+                      {{ t("Loss Return", "လျော့ကြေး ပြန်အမ်းငွေ", "亏损返还", "เงินคืนยอดเสีย") }}
+                    </p>
+                    <p class="text-lg font-bold text-black">
+                      {{ Number(lossReturn.loss_return_amount || 0).toLocaleString() }} MMK
+                    </p>
+                    <p class="text-xs text-black/60 mt-1 font-['Pyidaungsu','Padauk',sans-serif]">
+                      {{ lossReturnNote }}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    class="bg-[#172240] text-white py-2 px-4 rounded-full font-bold text-sm disabled:opacity-40"
+                    :disabled="!lossReturn.can_claim || claimingLossReturn"
+                    @click="claimLossReturn"
+                  >
+                    {{ claimingLossReturn
+                      ? t("Loading...", "ဆောင်ရွက်နေသည်...", "加载中...", "กำลังโหลด...")
+                      : t("Claim", "ရယူမည်", "领取", "รับ") }}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
