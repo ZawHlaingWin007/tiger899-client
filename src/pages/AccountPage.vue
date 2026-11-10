@@ -580,36 +580,32 @@ async function claimLossReturn() {
                   </svg>
                 </button>
               </div>
-
-              <div
-                v-if="lossReturnLoaded"
-                class="mt-4 rounded-2xl border border-black/10 bg-[#F7FAFC] p-4"
-              >
-                <div class="flex items-center justify-between gap-3">
-                  <div>
-                    <p class="text-sm text-black/70 font-['Pyidaungsu','Padauk',sans-serif] mb-1">
-                      {{ t("Loss Return", "လျော့ကြေး ပြန်အမ်းငွေ", "亏损返还", "เงินคืนยอดเสีย") }}
-                    </p>
-                    <p class="text-lg font-bold text-black">
-                      {{ Number(lossReturn.loss_return_amount || 0).toLocaleString() }} MMK
-                    </p>
-                    <p class="text-xs text-black/60 mt-1 font-['Pyidaungsu','Padauk',sans-serif]">
-                      {{ lossReturnNote }}
-                    </p>
-                  </div>
-                  <button
-                    type="button"
-                    class="bg-[#172240] text-white py-2 px-4 rounded-full font-bold text-sm disabled:opacity-40"
-                    :disabled="!lossReturn.can_claim || claimingLossReturn"
-                    @click="claimLossReturn"
-                  >
-                    {{ claimingLossReturn
-                      ? t("Loading...", "ဆောင်ရွက်နေသည်...", "加载中...", "กำลังโหลด...")
-                      : t("Claim", "ရယူမည်", "领取", "รับ") }}
-                  </button>
-                </div>
-              </div>
             </div>
+          </div>
+
+          <div
+            v-if="lossReturnLoaded"
+            class="mt-4 w-full rounded-2xl border border-black/10 bg-[#F7FAFC] p-4"
+          >
+            <p class="text-sm md:text-base text-black/70 font-['Pyidaungsu','Padauk',sans-serif]">
+              {{ t("Loss Return", "လျော့ကြေး ပြန်အမ်းငွေ", "亏损返还", "เงินคืนยอดเสีย") }}
+            </p>
+            <p class="mt-1 text-xl md:text-2xl font-bold text-black">
+              {{ Number(lossReturn.loss_return_amount || 0).toLocaleString() }} MMK
+            </p>
+            <p class="mt-1 text-xs md:text-sm text-black/60 font-['Pyidaungsu','Padauk',sans-serif]">
+              {{ lossReturnNote }}
+            </p>
+            <button
+              type="button"
+              class="mt-3 w-full bg-[#172240] text-white py-2.5 md:py-3 rounded-full font-bold text-sm md:text-base font-['Pyidaungsu','Padauk',sans-serif] disabled:opacity-40"
+              :disabled="!lossReturn.can_claim || claimingLossReturn"
+              @click="claimLossReturn"
+            >
+              {{ claimingLossReturn
+                ? t("Loading...", "ဆောင်ရွက်နေသည်...", "加载中...", "กำลังโหลด...")
+                : t("Claim", "ရယူမည်", "领取", "รับ") }}
+            </button>
           </div>
 
           <!-- Action Buttons -->
