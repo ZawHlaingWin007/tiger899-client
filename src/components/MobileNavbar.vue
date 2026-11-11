@@ -237,6 +237,7 @@ const apkDownloadUrl =
           {{ t("APK", "APK", "APK", "APK") }}
         </a>
         <button
+          v-if="!showQuickLogin"
           type="button"
           @click="openRegisterModal"
           class="btn-ixmm-register px-2 py-1 text-[12px] font-['Pyidaungsu','Padauk',sans-serif]"
